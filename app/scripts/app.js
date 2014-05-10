@@ -13,6 +13,10 @@ angular
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
+      .when('/canvas', {
+        templateUrl: 'views/canvas.html',
+        controller: 'CanvasCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
