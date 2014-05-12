@@ -3,14 +3,15 @@
 angular.module('blogApp')
   .directive('pageRow', function ($timeout, Registry) {
     return {
-      template: '<section class="row"></section>',
+      template: '<section class="row" ng-transclude></section>',
       restrict: 'E',
       replace: true,
+      transclude: true,
       link: function postLink(scope, element, attrs) {
         $timeout(function() {
-          var pageContainer = element.parents('article').first();
-          var id = pageContainer.data('id');
-          var page = Registry.getPage(id);
+          var pageContainer = element.parents('article.page').first();
+          var pageId = pageContainer.data('id');
+          var page = Registry.getPage(pageId);
 
           var siblingRows = pageContainer.find('section.row');
           var previousRows = element.prevAll('section.row');
@@ -36,6 +37,7 @@ angular.module('blogApp')
           }
           var strokeColor = attrs.strokeColor || pageContainer.data('strokeColor');
           var rowOrigin = bleed + strokeWidth;
+          var width = pageWidth - rowOrigin * 2;
           var height = (pageHeight - rowOrigin * 2) / siblingRows.size();
           var left = rowOrigin;
           var top = (previousRows.size() * height) + rowOrigin;
@@ -47,21 +49,35 @@ angular.module('blogApp')
             wobble = 1;
           }
 
-          var frame = page.drawnRect(
+
+          var row = page.drawnRect(
             left,
             top,
-            pageWidth - (rowOrigin) * 2,
+            width,
             height,
             wobble
           );
           if (angular.isNumber(strokeWidth)) {
-            frame.attr(
+            row.attr(
               {
                 'stroke': strokeColor,
                 'stroke-width': strokeWidth
               }
             );
           }
+          var id = Raphael.createUUID();
+          row.id = id;
+          element
+            .attr('id', 'row_' + id)
+            .data({
+              'id': id,
+              'width': width,
+              'height': height,
+              'bleed': bleed,
+              'strokeWidth': strokeWidth,
+              'strokeColor': strokeColor
+            });
+          Registry.addRow({'id': id, 'row': row});
         }, 10);
       }
     };

@@ -3,7 +3,7 @@
 angular.module('blogApp')
   .directive('page', function (Registry) {
     return {
-      template: '<article class="page"><div class="page_container"></div><div ng-transclude></div></article>',
+      template: '<article class="page"><div class="page_container"></div><div class="content" ng-transclude></div></article>',
       restrict: 'E',
       replace: true,
       transclude: true,
@@ -38,6 +38,7 @@ angular.module('blogApp')
           'strokeWidth': strokeWidth,
           'strokeColor': strokeColor
         });
+        console.log(element.data());
         Registry.addPage({'id': id, 'page': page});
       }
     };
